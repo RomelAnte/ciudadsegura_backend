@@ -3,6 +3,7 @@ from django.db import models
 # Create your models here.
 class Report(models.Model):
     id = models.AutoField(primary_key=True)
+    type = models.IntegerField(null=True, blank=True)
     description = models.TextField()
     address = models.CharField(max_length=255)
     latitude = models.DecimalField(max_digits=9, decimal_places=6)
