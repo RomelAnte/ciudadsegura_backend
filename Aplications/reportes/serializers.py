@@ -1,11 +1,10 @@
 from rest_framework import serializers
 from .models import Report
 
-
 class ReportSerializer(serializers.ModelSerializer):
     class Meta:
         model = Report
-        fields = ['id',  'description', 'address', 'latitude', 'longitude', 'picture', 'creation_date', 'update_date']
+        fields = ['id', 'type', 'description', 'address', 'latitude', 'longitude', 'picture', 'status', 'creation_date', 'update_date']
         read_only_fields = ('creation_date', 'update_date')
 
     '''def validate_picture(self, value):

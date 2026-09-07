@@ -14,6 +14,7 @@ class ReportType(models.Model):
     
 class Report(models.Model):
     id = models.AutoField(primary_key=True)
+    user = models.ForeignKey('auth.User', on_delete=models.CASCADE, null=True, blank=True)
     type = models.ForeignKey('ReportType', on_delete=models.CASCADE)
     description = models.TextField()
     address = models.CharField(max_length=255)
