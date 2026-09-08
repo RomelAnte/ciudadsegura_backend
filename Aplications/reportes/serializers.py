@@ -1,11 +1,14 @@
 from rest_framework import serializers
+from django.contrib.auth.models import User
 from .models import Report
 
 class ReportSerializer(serializers.ModelSerializer):
+    user = serializers.ReadOnlyField(source='user.username')
+
     class Meta:
         model = Report
-        fields = ['id', 'type', 'description', 'address', 'latitude', 'longitude', 'picture', 'status', 'creation_date', 'update_date']
-        read_only_fields = ('creation_date', 'update_date')
+        fields = ['id', 'user', 'type', 'description', 'address', 'latitude', 'longitude', 'picture', 'status', 'creation_date', 'update_date']
+        read_only_fields = ('user', 'creation_date', 'update_date')
 
     '''def validate_picture(self, value):
         # Validar que la imagen no sea mayor a 2MB
@@ -47,5 +50,11 @@ class ReportSerializer(serializers.ModelSerializer):
     def delete(self, instance):
         instance.delete()
         return {"message": "Reporte eliminado exitosamente"}    '''
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'first_name', 'last_name']
+        read_only_fields = ('id', 'username', 'email', 'first_name', 'last_name')
 
     
