@@ -1,7 +1,6 @@
-from Aplications.reportes.models import ReportType
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Report
+from .models import Report, ReportType
 
 class ReportSerializer(serializers.ModelSerializer):
     user = serializers.ReadOnlyField(source='user.username')
@@ -30,9 +29,10 @@ class ReportSerializer(serializers.ModelSerializer):
         return value
 
     def validate(self, attrs):
-        # Validar que la imagen sea una imagen
-        if not attrs['picture'].content_type.startswith('image'):
-            raise serializers.ValidationError("La imagen debe ser una imagen")
+        picture = attrs.get('picture')
+        if picture and hasattr(picture, 'content_type'):
+            if not picture.content_type.startswith('image/'):
+                raise serializers.ValidationError({"picture": "El archivo debe ser una imagen"})
         return attrs
 
     def create(self, validated_data):
@@ -57,6 +57,29 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'username', 'email', 'first_name', 'last_name']
         read_only_fields = ('id', 'username', 'email', 'first_name', 'last_name')
+
+class UserLoginSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['username', 'password']
+    
+    def validate(self, attrs):
+        username = attrs.get('username')
+        password = attrs.get('password')
+        if username and password:
+            user = User.objects.get(username=username)
+            if not user.check_password(password):
+                raise serializers.ValidationError("Credenciales incorrectas")
+        return attrs
+    
+    def get_user(self):
+        return User.objects.get(username=self.validated_data['username'])
+    
+    def get_token(self):
+        return self.get_user().get_token()
+    
+    def get_token_refresh(self):
+        return self.get_user().get_token_refresh()
 
 class TipoReporteSerializer(serializers.ModelSerializer):
     class Meta:
